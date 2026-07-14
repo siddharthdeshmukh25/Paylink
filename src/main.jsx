@@ -13,6 +13,8 @@ import './home.css'
 import './loading.css'
 import './paylink.css'
 import './dashboard-enhancements.css'
+import './public-payment-v2.css'
+import './public-payment-v3.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

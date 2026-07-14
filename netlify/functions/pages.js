@@ -9,6 +9,7 @@ export default async request=>{
     if(request.method!=='POST')return json(405,{error:'Method not allowed'})
     const input=await request.json(),isDraft=Boolean(input.draft)
     if(!isDraft&&(!input.username||!input.upiId||!input.courseName||!input.amount))return json(400,{error:'Name, UPI ID, course name and amount are required before publishing.'})
+    if(!isDraft&&!/^[a-zA-Z0-9._-]{2,256}@[a-zA-Z][a-zA-Z0-9.-]{1,63}$/.test(String(input.upiId).trim()))return json(400,{error:'Enter a valid UPI ID, for example name@bank.'})
     const existing=input.pageId?await pages.findOne({uid:user.uid,pageId:input.pageId}):(input.newPage?null:await pages.findOne({uid:user.uid,pageId:{$exists:false}}))
     const username=input.username??existing?.username??'',courseName=input.courseName??existing?.courseName??'',amount=input.amount??existing?.amount??''
     const pageId=existing?.pageId||crypto.randomUUID()
