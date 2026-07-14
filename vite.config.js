@@ -55,4 +55,9 @@ function netlifyApiEmulator() {
 export default defineConfig({
   plugins: [react(), netlifyApiEmulator()],
   server: { host: true },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: true,
+  },
 })

@@ -1,0 +1,26 @@
+PWA ICONS INSTRUCTIONS:
+
+You need to create 2 icon files for PWA:
+
+1. icon-192.png (192x192 pixels)
+2. icon-512.png (512x512 pixels)
+
+How to create icons:
+
+Option 1: Use online tools
+- Go to https://favicon.io/ or https://realfavicongenerator.net/
+- Upload your logo or create a simple design
+- Download the icons and rename them to icon-192.png and icon-512.png
+- Place them in the public/ folder
+
+Option 2: Use design tools
+- Create a simple square design with your logo
+- Export as PNG in both 192x192 and 512x512 sizes
+- Place them in the public/ folder
+
+For now, you can use any placeholder image or create a simple text-based icon.
+
+The icons should have:
+- Your logo or brand symbol
+- Background color: #316bff (blue)
+- Simple, recognizable design
