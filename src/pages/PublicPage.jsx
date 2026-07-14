@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { QRCodeSVG } from 'qrcode.react'
+import { QRCodeCanvas } from 'qrcode.react'
 import { api } from '../lib/api'
 
 export function PublicPage() {
   const { slug } = useParams()
   const [page, setPage] = useState()
   const [error, setError] = useState('')
+  const [showScanner, setShowScanner] = useState(false)
+  const qrRef = useRef(null)
 
   useEffect(() => {
     api.page(slug).then(r => {
@@ -18,10 +20,28 @@ export function PublicPage() {
     }).catch(e => setError(e.message))
   }, [slug])
 
+  const downloadQR = () => {
+    const canvas = qrRef.current?.querySelector('canvas')
+    if (canvas) {
+      const link = document.createElement('a')
+      link.download = `paylink-${page.courseName.replace(/\s+/g, '-').toLowerCase()}.png`
+      link.href = canvas.toDataURL('image/png')
+      link.click()
+    }
+  }
+
+  const upiLinks = {
+    gpay: `tez://upi/pay?pa=${encodeURIComponent(page?.upiId)}&pn=${encodeURIComponent(page?.username)}&am=${page?.amount}&tn=${encodeURIComponent(page?.courseName)}&cu=INR`,
+    phonepe: `phonepe://pay?pa=${encodeURIComponent(page?.upiId)}&pn=${encodeURIComponent(page?.username)}&am=${page?.amount}&tn=${encodeURIComponent(page?.courseName)}&cu=INR`,
+    paytm: `paytmmp://pay?pa=${encodeURIComponent(page?.upiId)}&pn=${encodeURIComponent(page?.username)}&am=${page?.amount}&tn=${encodeURIComponent(page?.courseName)}&cu=INR`,
+    bhim: `bhim://upi/pay?pa=${encodeURIComponent(page?.upiId)}&pn=${encodeURIComponent(page?.username)}&am=${page?.amount}&tn=${encodeURIComponent(page?.courseName)}&cu=INR`,
+    generic: `upi://pay?pa=${encodeURIComponent(page?.upiId)}&pn=${encodeURIComponent(page?.username)}&am=${page?.amount}&tn=${encodeURIComponent(page?.courseName)}&cu=INR`
+  }
+
   if (error) return <main className="public-error">This payment page is unavailable.</main>
   if (!page) return <PaymentSkeleton/>
 
-  const upi = `upi://pay?pa=${encodeURIComponent(page.upiId)}&pn=${encodeURIComponent(page.username)}&am=${page.amount}&tn=${encodeURIComponent(page.courseName)}&cu=INR`
+  const upi = upiLinks.generic
   const links = Object.entries(page.socialLinks || {}).filter(([, v]) => v)
 
   return (
@@ -46,11 +66,26 @@ export function PublicPage() {
             <span>Amount to pay</span>
             <strong>₹{Number(page.amount || 0).toLocaleString('en-IN')}</strong>
           </div>
-          <div className="payment-qr">
-            <QRCodeSVG value={upi} size={210} level="M" includeMargin/>
+          <div className="payment-qr" ref={qrRef}>
+            <QRCodeCanvas value={upi} size={210} level="M" includeMargin/>
             <p>Scan with any UPI app</p>
+            <button className="download-qr" onClick={downloadQR}>Download QR</button>
           </div>
-          <a className="payment-cta" href={upi} onClick={() => api.event({ slug, event: 'pay_click' })}>Pay now <b>→</b></a>
+          <div className="upi-apps">
+            <a href={upiLinks.gpay} onClick={() => api.event({ slug, event: 'pay_click_gpay' })} className="upi-btn gpay">
+              <span>₹</span> Google Pay
+            </a>
+            <a href={upiLinks.phonepe} onClick={() => api.event({ slug, event: 'pay_click_phonepe' })} className="upi-btn phonepe">
+              <span>₹</span> PhonePe
+            </a>
+            <a href={upiLinks.paytm} onClick={() => api.event({ slug, event: 'pay_click_paytm' })} className="upi-btn paytm">
+              <span>₹</span> Paytm
+            </a>
+            <a href={upiLinks.bhim} onClick={() => api.event({ slug, event: 'pay_click_bhim' })} className="upi-btn bhim">
+              <span>₹</span> BHIM
+            </a>
+          </div>
+          <a className="payment-cta" href={upi} onClick={() => api.event({ slug, event: 'pay_click' })}>Pay with any UPI app <b>→</b></a>
           <p className="payment-note">{page.paymentNote}</p>
           <div className="payment-safe"><span>✓</span> UPI payment is completed in your payment app.</div>
           {links.length > 0 && <div className="payment-socials">
