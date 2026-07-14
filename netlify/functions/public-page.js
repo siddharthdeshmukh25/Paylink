@@ -1,0 +1,2 @@
+import { db,json } from './_shared.js'
+export default async request=>{try{const slug=new URL(request.url).searchParams.get('slug');if(!slug)return json(400,{error:'Missing page slug'});const page=await (await db()).collection('pages').findOne({slug,published:true},{projection:{_id:0,uid:0,email:0,phone:0,gender:0}});return page?json(200,{page}):json(404,{error:'Page not found'})}catch(error){return json(500,{error:'Could not load page'})}}

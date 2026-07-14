@@ -1,0 +1,1 @@
+.app-loading{min-height:100vh;display:flex;align-items:center;justify-content:center;gap:12px;background:#f7f9fc;color:#4875d5;font:700 13px 'DM Mono'}.app-loading .loader{width:28px;height:28px;border:3px solid #d3dff8;border-top-color:#316bff;border-radius:50%;animation:turn .8s linear infinite}
