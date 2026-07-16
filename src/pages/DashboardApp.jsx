@@ -9,8 +9,8 @@ const blank = {
   username: '',
   upiId: '',
   courseName: '',
-  amount: '499',
-  paymentNote: 'After payment, please send a screenshot.',
+  amount: '',
+  paymentNote: '',
   logo: '',
   banner: '',
   themeColor: '#316bff',
@@ -64,9 +64,8 @@ export function DashboardApp() {
       if (!current) return navigate('/login', { replace: true })
       setUser(current)
       try {
-        const [list, profileResult] = await Promise.all([load(), api.profile()])
+        const [, profileResult] = await Promise.all([load(), api.profile()])
         setProfile(profileResult.profile)
-        if (list[0]) setPage(list[0])
       } catch (e) {
         setNotice(e.message)
       }
